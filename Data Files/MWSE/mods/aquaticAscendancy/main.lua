@@ -22,96 +22,66 @@ event.register("initialized", initialized)
 local function updatePlayer()
     local breathing = tes3.isAffectedBy({ reference = tes3.player, effect = 0 })
     local swift = tes3.isAffectedBy({ reference = tes3.player, effect = 1 })
+    local breathFlag = false
+    local swiftFlag = false
+
 
     if config.onlyArgonians == true then
         if tes3.player.object.race.id == "Argonian" then
             log:debug("" .. tes3.player.object.name .. " is an Argonian.")
-
-            if config.waterBreathing == true then
-                tes3.mobilePlayer.waterBreathing = 1
-                log:debug("" .. tes3.player.object.name .. " was given Water Breathing.")
-            else
-                if not breathing then
-                    tes3.mobilePlayer.waterBreathing = 0
-                    log:debug("" .. tes3.player.object.name .. "'s Water Breathing set to 0.")
-                end
-            end
-
-            if config.swiftSwim == true then
-                if not swift then
-                    tes3.mobilePlayer.swiftSwim = config.swimValue
-                    log:debug("" .. tes3.player.object.name .. " was given Swift Swim. Total: " .. tes3.mobilePlayer.swiftSwim .. "")
-                else
-                    local effectiveMagnitude = tes3.getEffectMagnitude({reference = tes3.player, effect = tes3.effect.swiftSwim })
-                    log:debug(string.format("Effective Swift Swim: %f", effectiveMagnitude))
-
-                    tes3.mobilePlayer.swiftSwim = config.swimValue + effectiveMagnitude
-                    log:debug("" .. tes3.player.object.name .. " was given Swift Swim. Total: " .. tes3.mobilePlayer.swiftSwim .. ", Effective: " .. effectiveMagnitude .. "")
-                end
-            else
-                if not swift then
-                    tes3.mobilePlayer.swiftSwim = 0
-                    log:debug("" .. tes3.player.object.name .. "'s Swift Swim set to 0.")
-                else
-                    local effectiveMagnitude = tes3.getEffectMagnitude({reference = tes3.player, effect = tes3.effect.swiftSwim })
-                    log:debug(string.format("Effective Swift Swim: %f", effectiveMagnitude))
-
-                    tes3.mobilePlayer.swiftSwim = effectiveMagnitude
-                    log:debug("" .. tes3.player.object.name .. " Swift Swim bonus removed. Total: " .. tes3.mobilePlayer.swiftSwim .. ", Effective: " .. effectiveMagnitude .. "")
-                end
-            end
+            breathFlag = true
+            swiftFlag = true
         else
             log:debug("" .. tes3.player.object.name .. " is not an Argonian.")
-            if not breathing then
-                tes3.mobilePlayer.waterBreathing = 0
-                log:debug("" .. tes3.player.object.name .. "'s Water Breathing set to 0.")
-            end
-            if not swift then
-                tes3.mobilePlayer.swiftSwim = 0
-                log:debug("" .. tes3.player.object.name .. "'s Swift Swim set to 0.")
-            else
-                local effectiveMagnitude = tes3.getEffectMagnitude({reference = tes3.player, effect = tes3.effect.swiftSwim })
-                log:debug(string.format("Effective Swift Swim: %f", effectiveMagnitude))
-
-                tes3.mobilePlayer.swiftSwim = effectiveMagnitude
-                log:debug("" .. tes3.player.object.name .. " Swift Swim bonus removed. Total: " .. tes3.mobilePlayer.swiftSwim .. ", Effective: " .. effectiveMagnitude .. "")
-            end
+            breathFlag = false
+            swiftFlag = false
         end
     else
         log:debug("" .. tes3.player.object.name .. " does not need to be an Argonian.")
+        breathFlag = true
+        swiftFlag = true
+    end
 
-        if config.waterBreathing == true then
-            tes3.mobilePlayer.waterBreathing = 1
-            log:debug("" .. tes3.player.object.name .. " was given Water Breathing.")
-        else
-            if not breathing then
-                tes3.mobilePlayer.waterBreathing = 0
-                log:debug("" .. tes3.player.object.name .. "'s Water Breathing set to 0.")
-            end
+    if config.affectVampires == true then
+        local affected = tes3.isAffectedBy({ reference = tes3.player, effect = 133 })
+        if affected then
+            log:debug("" .. tes3.player.object.name .. " is a Vampire.")
+            breathFlag = true
         end
+    end
 
-        if config.swiftSwim == true then
-            if not swift then
-                tes3.mobilePlayer.swiftSwim = config.swimValue
-                log:debug("" .. tes3.player.object.name .. " was given Swift Swim. Total: " .. tes3.mobilePlayer.swiftSwim .. "")
-            else
-                local effectiveMagnitude = tes3.getEffectMagnitude({reference = tes3.player, effect = tes3.effect.swiftSwim })
-                log:debug(string.format("Effective Swift Swim: %f", effectiveMagnitude))
 
-                tes3.mobilePlayer.swiftSwim = config.swimValue + effectiveMagnitude
-                log:debug("" .. tes3.player.object.name .. " was given Swift Swim. Total: " .. tes3.mobilePlayer.swiftSwim .. ", Effective: " .. effectiveMagnitude .. "")
-            end
+    if (config.waterBreathing == true and breathFlag == true) then
+        tes3.mobilePlayer.waterBreathing = 1
+        log:debug("" .. tes3.player.object.name .. " was given Water Breathing.")
+    else
+        if not breathing then
+            tes3.mobilePlayer.waterBreathing = 0
+            log:debug("" .. tes3.player.object.name .. "'s Water Breathing set to 0.")
+        end
+    end
+
+    if (config.swiftSwim == true and swiftFlag == true) then
+        if not swift then
+            tes3.mobilePlayer.swiftSwim = config.swimValue
+            log:debug("" .. tes3.player.object.name .. " was given Swift Swim. Total: " .. tes3.mobilePlayer.swiftSwim .. "")
         else
-            if not swift then
-                tes3.mobilePlayer.swiftSwim = 0
-                log:debug("" .. tes3.player.object.name .. "'s Swift Swim set to 0.")
-            else
-                local effectiveMagnitude = tes3.getEffectMagnitude({reference = tes3.player, effect = tes3.effect.swiftSwim })
-                log:debug(string.format("Effective Swift Swim: %f", effectiveMagnitude))
+            local effectiveMagnitude = tes3.getEffectMagnitude({reference = tes3.player, effect = tes3.effect.swiftSwim })
+            log:debug(string.format("Effective Swift Swim: %f", effectiveMagnitude))
 
-                tes3.mobilePlayer.swiftSwim = effectiveMagnitude
-                log:debug("" .. tes3.player.object.name .. " Swift Swim bonus removed. Total: " .. tes3.mobilePlayer.swiftSwim .. ", Effective: " .. effectiveMagnitude .. "")
-            end
+            tes3.mobilePlayer.swiftSwim = config.swimValue + effectiveMagnitude
+            log:debug("" .. tes3.player.object.name .. " was given Swift Swim. Total: " .. tes3.mobilePlayer.swiftSwim .. ", Effective: " .. effectiveMagnitude .. "")
+        end
+    else
+        if not swift then
+            tes3.mobilePlayer.swiftSwim = 0
+            log:debug("" .. tes3.player.object.name .. "'s Swift Swim set to 0.")
+        else
+            local effectiveMagnitude = tes3.getEffectMagnitude({reference = tes3.player, effect = tes3.effect.swiftSwim })
+            log:debug(string.format("Effective Swift Swim: %f", effectiveMagnitude))
+
+            tes3.mobilePlayer.swiftSwim = effectiveMagnitude
+            log:debug("" .. tes3.player.object.name .. " Swift Swim bonus removed. Total: " .. tes3.mobilePlayer.swiftSwim .. ", Effective: " .. effectiveMagnitude .. "")
         end
     end
 end
@@ -141,35 +111,40 @@ local function restKey(e)
     end
     log:trace("Aquatic rest check on " .. tes3.player.object.name .. ".")
     local restable = tes3.canRest()
+    local restFlag = false
+
 
     if not restable then
         if config.onlyArgonians == true then
             if tes3.player.object.race.id == "Argonian" then
-    
-                local gmst = tes3.findGMST(tes3.gmst.sNotifyMessage1).value
-    
-                tes3.findGMST(tes3.gmst.sNotifyMessage1).value = ""
-    
-                if tes3.mobilePlayer.isFalling == false and tes3.mobilePlayer.isJumping == false and tes3.mobilePlayer.isFlying == false then
-                    tes3.showRestMenu({ checkForSolidGround = false, showMessage = false })
-                    timer.delayOneFrame(function() tes3.findGMST(tes3.gmst.sNotifyMessage1).value = gmst end)
-                else
-                    tes3.findGMST(tes3.gmst.sNotifyMessage1).value = gmst
-                end
+                restFlag = true
+            else
+                restFlag = false
             end
         else
-    
+            restFlag = true
+        end
+
+        if config.affectVampires == true then
+            local affected = tes3.isAffectedBy({ reference = tes3.player, effect = 133 })
+            if affected then
+                restFlag = true
+            end
+        end
+
+
+        if restFlag == true then
             local gmst = tes3.findGMST(tes3.gmst.sNotifyMessage1).value
-    
+
             tes3.findGMST(tes3.gmst.sNotifyMessage1).value = ""
-    
+
             if tes3.mobilePlayer.isFalling == false and tes3.mobilePlayer.isJumping == false and tes3.mobilePlayer.isFlying == false then
                 tes3.showRestMenu({ checkForSolidGround = false, showMessage = false })
                 timer.delayOneFrame(function() tes3.findGMST(tes3.gmst.sNotifyMessage1).value = gmst end)
             else
                 tes3.findGMST(tes3.gmst.sNotifyMessage1).value = gmst
             end
-        end 
+        end
     end
 end
 event.register(tes3.event.keybindTested, restKey, { filter = tes3.keybind.rest })
@@ -206,96 +181,66 @@ local function updateNPC(e)
 
     local breathing = tes3.isAffectedBy({ reference = e.reference, effect = 0 })
     local swift = tes3.isAffectedBy({ reference = e.reference, effect = 1 })
+    local breathFlag = false
+    local swiftFlag = false
+
 
     if config.onlyArgonians == true then
         if e.reference.object.race.id == "Argonian" then
             log:debug("" .. e.reference.object.name .. " is an Argonian.")
-
-            if config.waterBreathing == true then
-                e.reference.mobile.waterBreathing = 1
-                log:debug("" .. e.reference.object.name .. " was given Water Breathing.")
-            else
-                if not breathing then
-                    e.reference.mobile.waterBreathing = 0
-                    log:debug("" .. e.reference.object.name .. "'s Water Breathing set to 0.")
-                end
-            end
-
-            if config.swiftSwim == true then
-                if not swift then
-                    e.reference.mobile.swiftSwim = config.swimValue
-                    log:debug("" .. e.reference.object.name .. " was given Swift Swim. Total: " .. e.reference.mobile.swiftSwim .. "")
-                else
-                    local effectiveMagnitude = tes3.getEffectMagnitude({reference = e.reference, effect = tes3.effect.swiftSwim })
-                    log:debug(string.format("Effective Swift Swim: %f", effectiveMagnitude))
-
-                    e.reference.mobile.swiftSwim = config.swimValue + effectiveMagnitude
-                    log:debug("" .. e.reference.object.name .. " was given Swift Swim. Total: " .. e.reference.mobile.swiftSwim .. ", Effective: " .. effectiveMagnitude .. "")
-                end
-            else
-                if not swift then
-                    e.reference.mobile.swiftSwim = 0
-                    log:debug("" .. e.reference.object.name .. "'s Swift Swim set to 0.")
-                else
-                    local effectiveMagnitude = tes3.getEffectMagnitude({reference = e.reference, effect = tes3.effect.swiftSwim })
-                    log:debug(string.format("Effective Swift Swim: %f", effectiveMagnitude))
-
-                    e.reference.mobile.swiftSwim = effectiveMagnitude
-                    log:debug("" .. e.reference.object.name .. " Swift Swim bonus removed. Total: " .. e.reference.mobile.swiftSwim .. ", Effective: " .. effectiveMagnitude .. "")
-                end
-            end
+            breathFlag = true
+            swiftFlag = true
         else
             log:debug("" .. e.reference.object.name .. " is not an Argonian.")
-            if not breathing then
-                e.reference.mobile.waterBreathing = 0
-                log:debug("" .. e.reference.object.name .. "'s Water Breathing set to 0.")
-            end
-            if not swift then
-                e.reference.mobile.swiftSwim = 0
-                log:debug("" .. e.reference.object.name .. "'s Swift Swim set to 0.")
-            else
-                local effectiveMagnitude = tes3.getEffectMagnitude({reference = e.reference, effect = tes3.effect.swiftSwim })
-                log:debug(string.format("Effective Swift Swim: %f", effectiveMagnitude))
-
-                e.reference.mobile.swiftSwim = effectiveMagnitude
-                log:debug("" .. e.reference.object.name .. " Swift Swim bonus removed. Total: " .. e.reference.mobile.swiftSwim .. ", Effective: " .. effectiveMagnitude .. "")
-            end
+            breathFlag = false
+            swiftFlag = false
         end
     else
         log:debug("" .. e.reference.object.name .. " does not need to be an Argonian.")
+        breathFlag = true
+        swiftFlag = true
+    end
 
-        if config.waterBreathing == true then
-            e.reference.mobile.waterBreathing = 1
-            log:debug("" .. e.reference.object.name .. " was given Water Breathing.")
-        else
-            if not breathing then
-                e.reference.mobile.waterBreathing = 0
-                log:debug("" .. e.reference.object.name .. "'s Water Breathing set to 0.")
-            end
+    if config.affectVampires == true then
+        local affected = tes3.isAffectedBy({ reference = e.reference, effect = 133 })
+        if affected then
+            log:debug("" .. e.reference.object.name .. " is a Vampire.")
+            breathFlag = true
         end
+    end
 
-        if config.swiftSwim == true then
-            if not swift then
-                e.reference.mobile.swiftSwim = config.swimValue
-                log:debug("" .. e.reference.object.name .. " was given Swift Swim. Total: " .. e.reference.mobile.swiftSwim .. "")
-            else
-                local effectiveMagnitude = tes3.getEffectMagnitude({reference = e.reference, effect = tes3.effect.swiftSwim })
-                log:debug(string.format("Effective Swift Swim: %f", effectiveMagnitude))
 
-                e.reference.mobile.swiftSwim = config.swimValue + effectiveMagnitude
-                log:debug("" .. e.reference.object.name .. " was given Swift Swim. Total: " .. e.reference.mobile.swiftSwim .. ", Effective: " .. effectiveMagnitude .. "")
-            end
+    if (config.waterBreathing == true and breathFlag == true) then
+        e.reference.mobile.waterBreathing = 1
+        log:debug("" .. e.reference.object.name .. " was given Water Breathing.")
+    else
+        if not breathing then
+            e.reference.mobile.waterBreathing = 0
+            log:debug("" .. e.reference.object.name .. "'s Water Breathing set to 0.")
+        end
+    end
+
+    if (config.swiftSwim == true and swiftFlag == true) then
+        if not swift then
+            e.reference.mobile.swiftSwim = config.swimValue
+            log:debug("" .. e.reference.object.name .. " was given Swift Swim. Total: " .. e.reference.mobile.swiftSwim .. "")
         else
-            if not swift then
-                e.reference.mobile.swiftSwim = 0
-                log:debug("" .. e.reference.object.name .. "'s Swift Swim set to 0.")
-            else
-                local effectiveMagnitude = tes3.getEffectMagnitude({reference = e.reference, effect = tes3.effect.swiftSwim })
-                log:debug(string.format("Effective Swift Swim: %f", effectiveMagnitude))
+            local effectiveMagnitude = tes3.getEffectMagnitude({reference = e.reference, effect = tes3.effect.swiftSwim })
+            log:debug(string.format("Effective Swift Swim: %f", effectiveMagnitude))
 
-                e.reference.mobile.swiftSwim = effectiveMagnitude
-                log:debug("" .. e.reference.object.name .. " Swift Swim bonus removed. Total: " .. e.reference.mobile.swiftSwim .. ", Effective: " .. effectiveMagnitude .. "")
-            end
+            e.reference.mobile.swiftSwim = config.swimValue + effectiveMagnitude
+            log:debug("" .. e.reference.object.name .. " was given Swift Swim. Total: " .. e.reference.mobile.swiftSwim .. ", Effective: " .. effectiveMagnitude .. "")
+        end
+    else
+        if not swift then
+            e.reference.mobile.swiftSwim = 0
+            log:debug("" .. e.reference.object.name .. "'s Swift Swim set to 0.")
+        else
+            local effectiveMagnitude = tes3.getEffectMagnitude({reference = e.reference, effect = tes3.effect.swiftSwim })
+            log:debug(string.format("Effective Swift Swim: %f", effectiveMagnitude))
+
+            e.reference.mobile.swiftSwim = effectiveMagnitude
+            log:debug("" .. e.reference.object.name .. " Swift Swim bonus removed. Total: " .. e.reference.mobile.swiftSwim .. ", Effective: " .. effectiveMagnitude .. "")
         end
     end
 end

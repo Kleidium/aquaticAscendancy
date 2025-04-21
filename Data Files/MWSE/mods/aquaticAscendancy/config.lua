@@ -6,6 +6,7 @@ local defaultConfig = {
 	swimValue = 25,
 	npcBenefits = true,
 	onlyArgonians = true,
+	affectVampires = true,
 	logLevel = "INFO"
 
 }

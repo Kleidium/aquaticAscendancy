@@ -79,6 +79,12 @@ settings:createOnOffButton {
     variable = mwse.mcm.createTableVariable { id = "onlyArgonians", table = config }
 }
 
+settings:createOnOffButton {
+    label = "Affect Vampires",
+    description = "Turn on or off Vampire bonuses. If this is on, vampires will breathe underwater if Water Breathing is on.\n\nVampires do not receive swim speed bonuses unless all races do.",
+    variable = mwse.mcm.createTableVariable { id = "affectVampires", table = config }
+}
+
 settings:createDropdown {
     label = "Debug Logging Level",
     description = "Set the log level.",
