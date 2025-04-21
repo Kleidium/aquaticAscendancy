@@ -202,8 +202,20 @@ local function updateNPC(e)
     end
 
     if config.affectVampires == true then
+        log:debug("Vampire check on " .. e.reference.object.name .. ".")
         local affected = tes3.isAffectedBy({ reference = e.reference, effect = 133 })
-        if affected then
+        local faction = e.reference.object.faction
+        local clan = false
+        if faction ~= nil then
+            log:debug("Faction not nil. (" .. faction.id .. ")")
+            if (faction.id == "Clan Aundae" or faction.id == "Clan Quarra" or faction.id == "Clan Berne") then
+                if e.reference.object.name ~= "Cattle" then
+                    clan = true
+                    log:debug("" .. e.reference.object.name .. " is a vampire clan member.")
+                end
+            end
+        end
+        if (affected or clan) then
             log:debug("" .. e.reference.object.name .. " is a Vampire.")
             breathFlag = true
         end
